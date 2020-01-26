@@ -14,8 +14,8 @@ setup(
      long_description=long_description,
      long_description_content_type='text/markdown',
      url='https://github.com/themarathoncontinues/discord-trivia-bot',
-     author='Leon Kozlowski, Jeremy Hikind',
-     author_email='leonkozlowski@gmail.com',
+     author='Jeremy Hikind, Leon Kozlowski',
+     author_email='jeremyhikind@gmail.com, leonkozlowski@gmail.com',
      classifiers=[
          "Programming Language :: Python :: 3",
          "License :: OSI Approved :: MIT License",
