@@ -40,9 +40,9 @@ class TriviaClient(discord.Client):
         result = False
         if answer.lower() == self.correct_answer.lower():
             result = True
-        elif self.answer_dict[answer.lower()].lower() == self.correct_answer.lower():
+        elif SequenceMatcher(None, answer, self.correct_answer).ratio() > 0.75:
             result = True
-        elif SequenceMatcher(answer, self.correct_answer).ratio() > 0.75:
+        elif answer.lower() in self.answer_dict.keys() and self.answer_dict[answer.lower()].lower() == self.correct_answer.lower():
             result = True
         return result
 
