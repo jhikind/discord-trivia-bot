@@ -135,3 +135,7 @@ dmypy.json
 
 # stuff
 .DS_Store
+
+# Folders for points
+server-points/
+

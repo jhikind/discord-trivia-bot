@@ -18,6 +18,9 @@ load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 SERVER = os.getenv("DISCORD_SERVER")
+output_folder = "server-points"
+if not os.path.exists(output_folder):
+    os.mkdir(output_folder)
 client = discord.Client()
 
 
@@ -28,7 +31,7 @@ class TriviaClient(discord.Client):
         self.trivia_json = None
         self.category_choice = None
         self.question_content = None
-        self.difficulty = None
+        self.difficulty = Nonecd s
         self.correct_answer = None
         self.incorrect_answers = None
         self.answer_set = None
@@ -58,23 +61,33 @@ class TriviaClient(discord.Client):
         return dedent(answer_str)
 
     def write_points(self, guild_name):
-        filename = "{}_points.json".format(guild_name.replace(" ", "_"))
-        if os.path.exists(filename):
-            os.remove(filename)
-        with open(filename, "w+") as f:
+        folder_name = guild_name.replace(" ", "_")
+        folder_path = os.path.join(output_folder, folder_name)
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
+        filename = "points.json"
+        file_path = os.path.join(folder_path, filename)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        with open(file_path, "w+") as f:
             json.dump(self.points, f)
 
     def display_points(self, guild_name):
-        filename = "{}_points.json".format(guild_name.replace(" ", "_"))
+        folder_name = guild_name.replace(" ", "_")
+        folder_path = os.path.join(output_folder, folder_name)
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
+        filename = "points.json"
+        file_path = os.path.join(output_folder, folder_name, filename)
         found = False
-        if os.path.exists(filename):
+        if os.path.exists(file_path):
             found = True
         if found:
-            with open(filename, "r+") as f:
+            with open(file_path, "r+") as f:
                 self.points = json.load(f)
 
         else:
-            with open(filename, "w+") as f:
+            with open(file_path, "w+") as f:
                 self.points = dict((member, 0) for member in self.members)
                 json.dump(self.points, f)
 
@@ -102,6 +115,7 @@ class TriviaClient(discord.Client):
             .replace("&quot;", "'")
             .replace("&eacute;", "e")
             .replace("&ouml;", "o")
+            .replace("&amp;","&")
         )
         return question
 
@@ -139,6 +153,9 @@ class TriviaClient(discord.Client):
         if not self.members:
             self.members = [member.name for member in message.guild.members]
             self.members.remove("trivia-bot")
+
+        if message.author == client.user:
+            return
 
         if message.content.startswith("!points") or message.content.startswith("!p"):
             await message.channel.send(self.display_points(message.guild.name))
@@ -214,12 +231,15 @@ class TriviaClient(discord.Client):
                         self.answer_set = set(
                             [self.correct_answer] + self.incorrect_answers
                         )
-                        question_str = dedent(config.question_answer_format.format(
-                                self.question_content,
-                                self.display_answers(),
-                                self.difficulty,
-                            )
-                        )
+                        question_str = dedent('''
+Question: {}
+
+{}
+Difficulty: {}
+
+
+NOTE: Please format your response like: '!answer answer_choice' or '!ans answer_choice' or '!a answer_choice'
+                                              '''.format(self.question_content, self.display_answers(), self.difficulty))
 
                         countdown = 3
                         for i in range(3):
@@ -284,6 +304,6 @@ class TriviaClient(discord.Client):
                         "A question has already been asked! Please answer before requesting another question."
                     )
 
-
-trivia_client = TriviaClient()
-trivia_client.run(TOKEN, reconnect=True)
+if __name__ == "__main__":
+    trivia_client = TriviaClient()
+    trivia_client.run(TOKEN, reconnect=True)
