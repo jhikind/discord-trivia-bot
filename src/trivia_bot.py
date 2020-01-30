@@ -31,7 +31,7 @@ class TriviaClient(discord.Client):
         self.trivia_json = None
         self.category_choice = None
         self.question_content = None
-        self.difficulty = Nonecd s
+        self.difficulty = None
         self.correct_answer = None
         self.incorrect_answers = None
         self.answer_set = None
