@@ -1,3 +1,3 @@
 # discord-trivia-bot
 
-webhook test 2
+Fun webhook test
